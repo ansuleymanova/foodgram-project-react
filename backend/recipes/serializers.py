@@ -20,17 +20,22 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all(), source="ingredient.id")
-    name = serializers.CharField(read_only=True, source="ingredient.name")
-    measurement_unit = serializers.CharField(read_only=True, source="ingredient.measurement_unit")
-
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all(),
+                                            source="ingredient.id")
+    name = serializers.CharField(read_only=True,
+                                 source="ingredient.name")
+    measurement_unit = serializers.CharField(
+        read_only=True,
+        source="ingredient.measurement_unit")
 
     class Meta:
         model = IngredientRecipe
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
+
 class RecipeReadSerializer(serializers.ModelSerializer):
-    ingredients = IngredientRecipeSerializer(IngredientRecipe, many=True)
+    ingredients = IngredientRecipeSerializer(many=True,
+                                             source='ingredientrecipe_set')
     tags = TagSerializer(Tag, many=True)
 
     class Meta:
@@ -59,13 +64,13 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                                        **validated_data)
         recipe.tags.set(tags)
         ingredients_req = context.data['ingredients']
-        for ingredient in ingredients:
-            print(ingredient['amount'])
-            ingredient_model = Ingredient.objects.get(id=ingredient['ingredient']["id"].id)
+        for ingredient in ingredients_req:
+            print(context.data['ingredients'][0])
+            ingredient_model = Ingredient.objects.get(id=ingredient['id'])
             IngredientRecipe.objects.create(
                 recipe=recipe,
                 ingredient=ingredient_model,
-                amount=ingredient["amount"],
+                amount=ingredient['amount'],
             )
         return recipe
 
