@@ -1,50 +1,49 @@
-from django.core.validators import MinValueValidator
+from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch.dispatcher import receiver
 
-from ingredients.models import Ingredient
-from tags.models import Tag
-from users.models import User
+User = get_user_model()
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=200)
+    color = models.CharField(max_length=200,
+                             null=True,
+                             unique=True)
+    slug = models.SlugField(max_length=200,
+                            unique=True,
+                            null=True)
+
+
+class Ingredient(models.Model):
+    name = models.CharField(max_length=200)
+    measurement_unit = models.CharField(max_length=200)
 
 
 class Recipe(models.Model):
-    id = models.IntegerField(primary_key=True,
-                             editable=False)
     name = models.CharField(max_length=200,
                             verbose_name='Название рецепта')
     author = models.ForeignKey(User,
                                on_delete=models.CASCADE,
                                related_name='recipes')
-    image = models.ImageField(upload_to='images/recipes',
-                              max_length=100,
-                              verbose_name='Иллюстрация')
+    image = models.ImageField(blank=False)
     text = models.TextField(verbose_name='Описание')
-    cooking_time = models.IntegerField(validators=[MinValueValidator(1), ],
-                                       verbose_name='Время приготовления')
+    cooking_time = models.PositiveIntegerField()
     pub_date = models.DateField(auto_now_add=True)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
     ingredients = models.ManyToManyField(Ingredient)
 
     class Meta:
         ordering = ['-pub_date']
 
+    def __str__(self):
+        return self.name
 
-class Favorite(models.Model):
-    user = models.ForeignKey(User,
-                             on_delete=models.CASCADE,
-                             related_name='fans')
+
+class IngredientRecipe(models.Model):
+    ingredient = models.ForeignKey(Ingredient,
+                                   on_delete=models.DO_NOTHING)
     recipe = models.ForeignKey(Recipe,
-                               on_delete=models.CASCADE,
-                               related_name='favorite_recipes')
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'recipe'],
-                                    name='unique_favorite')]
-
-
-class ShoppingCart(models.Model):
-    recipes = models.ManyToManyField(Recipe)
-    user = models.OneToOneField(User,
-                                on_delete=models.CASCADE,
-                                related_name='shopping_cart',
-                                primary_key=True)
+                               on_delete=models.DO_NOTHING)
+    amount = models.PositiveIntegerField()

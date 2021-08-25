@@ -7,8 +7,12 @@ load_dotenv()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '^))af1^je^kv^*!#jy)8mb3y=uy%i=6fn4e091te6idhtk+gse'
+SECRET_KEY = 'm=bh1wgm6s6ag)f$zf$g@_^%wv_&thwpzumglv4^0(pqibx%r&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -32,8 +36,6 @@ INSTALLED_APPS = [
     'drf_yasg',
     'users',
     'recipes',
-    'tags',
-    'ingredients',
 ]
 
 MIDDLEWARE = [
@@ -81,12 +83,14 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT'),
     }
 }
+
 #DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
 #        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #    }
 #}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -110,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
@@ -124,41 +128,41 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/backend_static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'backend_static')
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/backend_media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'backend_media')
 
 REST_FRAMEWORK = {
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.UserRateThrottle',
-        'rest_framework.throttling.AnonRateThrottle', ],
-    'DEFAULT_THROTTLE_RATES': {
-        'user': '10000/day',
-        'anon': '1000/day', },
+    #'DEFAULT_THROTTLE_CLASSES': [
+    #    'rest_framework.throttling.UserRateThrottle',
+    #    'rest_framework.throttling.AnonRateThrottle', ],
+    #'DEFAULT_THROTTLE_RATES': {
+    #    'user': '10000/day',
+    #    'anon': '1000/day', },
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
+    'PAGE_SIZE': 6,
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend'],
+    'SEARCH_PARAM': 'name',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication'],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAdminUser'],
+        'rest_framework.permissions.IsAuthenticated'],
 }
 
 AUTH_USER_MODEL = 'users.User'
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 #CORS_ORIGIN_WHITELIST = host
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
-#APPEND_SLASH=False
-
 DJOSER = {
     'LOGIN_FIELD': 'email',
-    'SERIALIZERS': {'user': 'users.serializers.CustomUserSerializer', },
+    'SERIALIZERS': {'user': 'users.serializers.CustomUserSerializer',
+                    'current_user': 'users.serializers.CustomUserSerializer',
+                    },
+    'PERMISSIONS': {'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly']},
 }
