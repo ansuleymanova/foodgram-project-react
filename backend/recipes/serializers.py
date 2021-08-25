@@ -79,7 +79,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class MinifiedRecipeSerializer():
+class MinifiedRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
