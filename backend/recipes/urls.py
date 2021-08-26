@@ -15,15 +15,17 @@ router.register(r'ingredients',
                 views.IngredientViewSet,
                 basename='ingredients')
 
+# favorite and cart urls have to be HIGHER in tle list than router
+# or they get overridden
 urlpatterns = [
-    path('', include(router.urls)),
-    #path('recipes/<recipe_id>/shopping_cart/',
-    #     views.shopping_cart,
-    #     name='shopping_cart'),
-    #path('recipes/download_shopping_cart/',
-    #     views.download_shopping_cart,
-    #     name='download_shopping_cart'),
-    #path('recipes/<recipe_id>/favorite/',
-    #     views.favorite,
-    #     name='favorite')
+     path('recipes/<recipe_id>/favorite/',
+          views.favorite,
+          name='favorite'),
+     path('recipes/<recipe_id>/shopping_cart/',
+          views.shopping_cart,
+          name='shopping_cart'),
+     path('', include(router.urls)),
+    # path('recipes/download_shopping_cart/',
+    #      views.download_shopping_cart,
+    #      name='download_shopping_cart'),
 ]

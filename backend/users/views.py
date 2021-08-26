@@ -1,13 +1,13 @@
-from users.permissions import IsAuthorAdminOrReadOnly
-from rest_framework import filters, permissions, status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from .models import Subscription, User
-from .serializers import (CustomUserSerializer,
-                          SubscriptionUserSerializer
-                          )
-from .pagination import PageNumberLimitPagination
 from djoser.views import UserViewSet
+from rest_framework import permissions, serializers, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+
+from users.permissions import IsAuthorAdminOrReadOnly
+
+from .models import Subscription, User
+from .pagination import PageNumberLimitPagination
+from .serializers import CustomUserSerializer, SubscriptionUserSerializer
 
 
 class UserViewSet(UserViewSet):
@@ -21,11 +21,14 @@ class UserViewSet(UserViewSet):
 def subscribe(request, user_id):
     if request.method == 'GET':
         author = User.objects.get(id=user_id)
-        Subscription.objects.create(author=author,
-                                    subscriber=request.user)
-        serializer =  SubscriptionUserSerializer(author)
-        return Response(serializer.data,
-                        status=status.HTTP_201_CREATED)
+        if author != request.user:
+            Subscription.objects.create(author=author,
+                                        subscriber=request.user)
+            serializer =  SubscriptionUserSerializer(author)
+            return Response(serializer.data,
+                            status=status.HTTP_201_CREATED)
+        raise serializers.ValidationError(
+            'Нельзя подписаться на самого себя')
     elif request.method == 'DELETE':
         Subscription.objects.get(author_id=user_id,
                                  subscriber_id=request.user.id).delete()
@@ -37,4 +40,6 @@ def subscribe(request, user_id):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def subscriptions(request):
-    return Response(SubscriptionUserSerializer(request.user.subscriptions).data)
+    queryset = User.objects.filter(subscription__subscriber_id=request.user.id)
+    serializer = SubscriptionUserSerializer(queryset, many=True)
+    return Response(serializer.data)

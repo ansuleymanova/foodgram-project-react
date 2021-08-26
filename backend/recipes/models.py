@@ -22,13 +22,12 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
-    name = models.CharField(max_length=200,
-                            verbose_name='Название рецепта')
+    name = models.CharField(max_length=200)
     author = models.ForeignKey(User,
                                on_delete=models.CASCADE,
                                related_name='recipes')
     image = models.ImageField(blank=False)
-    text = models.TextField(verbose_name='Описание')
+    text = models.TextField()
     cooking_time = models.PositiveIntegerField()
     pub_date = models.DateField(auto_now_add=True)
     tags = models.ManyToManyField(Tag, blank=True)
@@ -47,3 +46,28 @@ class IngredientRecipe(models.Model):
     recipe = models.ForeignKey(Recipe,
                                on_delete=models.DO_NOTHING)
     amount = models.PositiveIntegerField()
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe,
+                               on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'recipe'],
+                                    name='unique_favorite')]
+
+
+class ShoppingCart(models.Model):
+    user = models.OneToOneField(User,
+                                on_delete=models.CASCADE,
+                                primary_key=True)
+    recipes = models.ManyToManyField(Recipe)
+
+
+@receiver(post_save, sender=get_user_model())
+def create_user_cart(sender, instance, created, **kwargs):
+    if created:
+        ShoppingCart.objects.create(user=instance)
