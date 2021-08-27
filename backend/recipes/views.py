@@ -1,3 +1,4 @@
+from django.http.response import HttpResponse
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import get_object_or_404
@@ -6,8 +7,8 @@ from users.pagination import PageNumberLimitPagination
 from users.permissions import IsAdminOrReadOnly
 
 from .filters import RecipeFilterSet
-from .models import Favorite, Ingredient, Recipe, Tag
-from .serializers import (IngredientSerializer, MinifiedRecipeSerializer,
+from .models import Favorite, Ingredient, IngredientRecipe, Recipe, Tag
+from .serializers import (IngredientRecipeSerializer, IngredientSerializer, MinifiedRecipeSerializer,
                           RecipeWriteSerializer, TagSerializer)
 
 
@@ -43,7 +44,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
 @api_view(['GET', 'DELETE'])
 @permission_classes([permissions.IsAuthenticated])
 def favorite(request, recipe_id):
-    """adds recipe to favorites or removes it"""
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if request.method == 'GET':
         Favorite.objects.create(user=request.user, recipe=recipe)
@@ -60,7 +60,6 @@ def favorite(request, recipe_id):
 @api_view(['GET', 'DELETE'])
 @permission_classes([permissions.IsAuthenticated])
 def shopping_cart(request, recipe_id):
-    """adds recipe to cart or removes it"""
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if request.method == 'GET':
         request.user.shoppingcart.recipes.add(recipe)
@@ -71,3 +70,26 @@ def shopping_cart(request, recipe_id):
         return Response(status=status.HTTP_204_NO_CONTENT)
     else:
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+@api_view(['GET', 'DELETE'])
+@permission_classes([permissions.IsAuthenticated])
+def download_shopping_cart(request):
+    recipes = request.user.shoppingcart.recipes.all()
+    queryset = IngredientRecipe.objects.filter(recipe_id__in=recipes)
+    shopping_list = {}
+    for ingredient in queryset:
+        name = ingredient.ingredient.name
+        amount = ingredient.amount
+        if name in shopping_list:
+            shopping_list[name] = shopping_list[name] + amount
+        else:
+            shopping_list[name] = amount
+    plain_list = ''
+    for item in shopping_list.keys():
+        plain_list += f'{item}: {shopping_list[item]}\n'
+    response = HttpResponse(plain_list, content_type='text/plain')
+    filename = 'shopping_list.txt'
+    response['Content-Disposition'] = ('attachment; filename={0}'.
+                                       format(filename))
+    return HttpResponse(response)
