@@ -89,7 +89,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         for ingredient in ingredients_req:
             ingredient_list.append(IngredientRecipe(
                 recipe=recipe,
-                #здесь все равно приходится отправлять запрос в цикле,
+                # здесь все равно приходится отправлять запрос в цикле,
                 # не понимаю, можно ли сделать иначе
                 ingredient=Ingredient.objects.get(id=ingredient['id']),
                 amount=ingredient['amount']))
@@ -108,7 +108,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         for ingredient in ingredients_req:
             ingredient_list.append(IngredientRecipe(
                 recipe=instance,
-                #здесь все равно приходится отправлять запрос в цикле,
+                # здесь все равно приходится отправлять запрос в цикле,
                 # не понимаю, можно ли сделать иначе
                 ingredient=Ingredient.objects.get(id=ingredient['id']),
                 amount=ingredient['amount']))

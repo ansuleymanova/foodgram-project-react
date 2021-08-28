@@ -57,4 +57,3 @@ class SubscriptionUserSerializer(UserSerializer):
     def get_recipes_count(self, user) -> int:
         queryset = User.objects.annotate(recipe_count=Count('recipes'))
         return queryset.get(id=user.id).recipe_count
-
