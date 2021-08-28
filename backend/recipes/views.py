@@ -5,11 +5,12 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from users.pagination import PageNumberLimitPagination
 from users.permissions import IsAdminOrReadOnly
+from users.serializers import MinifiedRecipeSerializer
 
 from .filters import RecipeFilterSet
 from .models import Favorite, Ingredient, IngredientRecipe, Recipe, Tag
-from .serializers import (IngredientRecipeSerializer, IngredientSerializer, MinifiedRecipeSerializer,
-                          RecipeWriteSerializer, TagSerializer)
+from .serializers import (IngredientSerializer, RecipeWriteSerializer,
+                          TagSerializer)
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -50,8 +51,8 @@ def favorite(request, recipe_id):
         return Response(MinifiedRecipeSerializer(recipe).data,
                         status=status.HTTP_201_CREATED)
     elif request.method == 'DELETE':
-        favorite = Favorite.objects.get(user=request.user, recipe=recipe)
-        favorite.delete()
+        Favorite.objects.filter(user=request.user,
+                                recipe=recipe).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     else:
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -88,7 +89,8 @@ def download_shopping_cart(request):
     plain_list = ''
     for item in shopping_list.keys():
         plain_list += f'{item}: {shopping_list[item]}\n'
-    response = HttpResponse(plain_list, content_type='text/plain')
+    response = HttpResponse(plain_list,
+                            content_type='text/plain; charset=utf-16')
     filename = 'shopping_list.txt'
     response['Content-Disposition'] = ('attachment; filename={0}'.
                                        format(filename))

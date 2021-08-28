@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
@@ -28,7 +29,8 @@ class Recipe(models.Model):
                                related_name='recipes')
     image = models.ImageField(blank=False)
     text = models.TextField()
-    cooking_time = models.PositiveIntegerField()
+    cooking_time = models.PositiveIntegerField(validators=[
+        MinValueValidator(0), ])
     pub_date = models.DateField(auto_now_add=True)
     tags = models.ManyToManyField(Tag, blank=True)
     ingredients = models.ManyToManyField(Ingredient)
@@ -45,7 +47,7 @@ class IngredientRecipe(models.Model):
                                    on_delete=models.DO_NOTHING)
     recipe = models.ForeignKey(Recipe,
                                on_delete=models.DO_NOTHING)
-    amount = models.PositiveIntegerField()
+    amount = models.PositiveIntegerField(validators=[MinValueValidator(0), ])
 
 
 class Favorite(models.Model):

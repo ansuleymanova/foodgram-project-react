@@ -15,9 +15,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['84.201.155.112', 'localhost']
+ALLOWED_HOSTS = ['130.193.53.29', 'localhost']
 
 
 # Application definition
@@ -74,23 +74,23 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': os.environ.get('DB_NAME'),
-#        'USER': os.environ.get('POSTGRES_USER'),
-#        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-#        'HOST': os.environ.get('DB_HOST'),
-#        'PORT': os.environ.get('DB_PORT'),
-#    }
-#}
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
+    }
 }
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#        }
+#}
 
 
 # Password validation
@@ -136,12 +136,12 @@ MEDIA_URL = '/backend_media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'backend_media')
 
 REST_FRAMEWORK = {
-    #'DEFAULT_THROTTLE_CLASSES': [
-    #    'rest_framework.throttling.UserRateThrottle',
-    #    'rest_framework.throttling.AnonRateThrottle', ],
-    #'DEFAULT_THROTTLE_RATES': {
-    #    'user': '10000/day',
-    #    'anon': '1000/day', },
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.AnonRateThrottle', ],
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '10000/day',
+        'anon': '1000/day', },
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 6,
@@ -156,17 +156,18 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'users.User'
 
-CORS_ALLOWED_ORIGINS = [
-    "https://84.201.155.112", ]
-#CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = ["https://130.193.53.29", ]
+# CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
 DJOSER = {
-    #'LOGIN_FIELD': 'email',
+    'HIDE_USERS': False,
+    'USER_ID_FIELD': 'username',
     'SERIALIZERS': {'user': 'users.serializers.CustomUserSerializer',
-                    'current_user': 'users.serializers.CustomUserSerializer', },
+                    'current_user': 'users.serializers.CustomUserSerializer', 
+                    'user_create': 'djoser.serializers.UserCreateSerializer',},
     'PERMISSIONS':{'user_create': ['rest_framework.permissions.AllowAny'],
                    'token_create': ['rest_framework.permissions.AllowAny'],
-                   'user_list': ['rest_framework.permissions.AllowAny'], },
-    'HIDE_USERS': False,
+                   'user_list': ['rest_framework.permissions.AllowAny'],
+                   'user': ['rest_framework.permissions.AllowAny'],},
 }

@@ -1,5 +1,8 @@
+from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
+
+from users.serializers import CustomUserSerializer
 
 from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                      ShoppingCart, Tag)
@@ -38,6 +41,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
                                              source='ingredientrecipe_set')
     tags = TagSerializer(Tag, many=True)
     is_favorited = serializers.SerializerMethodField()
+    author = CustomUserSerializer()
 
     class Meta:
         model = Recipe
@@ -72,6 +76,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         fields = ['ingredients', 'tags', 'image',
                   'name', 'text', 'cooking_time']
 
+    @transaction.atomic
     def create(self, validated_data):
         context = self.context['request']
         ingredients = validated_data.pop("ingredientrecipe_set")
@@ -80,15 +85,18 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                                        **validated_data)
         recipe.tags.set(tags)
         ingredients_req = context.data['ingredients']
+        ingredient_list = []
         for ingredient in ingredients_req:
-            ingredient_model = Ingredient.objects.get(id=ingredient['id'])
-            IngredientRecipe.objects.create(
+            ingredient_list.append(IngredientRecipe(
                 recipe=recipe,
-                ingredient=ingredient_model,
-                amount=ingredient['amount'],
-            )
+                #здесь все равно приходится отправлять запрос в цикле,
+                # не понимаю, можно ли сделать иначе
+                ingredient=Ingredient.objects.get(id=ingredient['id']),
+                amount=ingredient['amount']))
+        IngredientRecipe.objects.bulk_create(ingredient_list)
         return recipe
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         context = self.context['request']
         ingredients = validated_data.pop("ingredientrecipe_set")
@@ -96,22 +104,18 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         instance = super().update(instance, validated_data)
         instance.tags.set(tags)
         ingredients_req = context.data['ingredients']
+        ingredient_list = []
         for ingredient in ingredients_req:
-            ingredient_model = Ingredient.objects.get(id=ingredient['id'])
-            IngredientRecipe.objects.create(
+            ingredient_list.append(IngredientRecipe(
                 recipe=instance,
-                ingredient=ingredient_model,
-                amount=ingredient['amount'])
+                #здесь все равно приходится отправлять запрос в цикле,
+                # не понимаю, можно ли сделать иначе
+                ingredient=Ingredient.objects.get(id=ingredient['id']),
+                amount=ingredient['amount']))
+        IngredientRecipe.objects.bulk_create(ingredient_list)
         return instance
 
     def to_representation(self, instance):
         serializer = RecipeReadSerializer(instance)
         serializer.context['request'] = self.context['request']
         return serializer.data
-
-
-class MinifiedRecipeSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Recipe
-        fields = ['id', 'name', 'image', 'cooking_time']

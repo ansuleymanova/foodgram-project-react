@@ -1,10 +1,18 @@
-from djoser.serializers import UserSerializer
-from rest_framework.serializers import SerializerMethodField
 from django.db.models.aggregates import Count
+from djoser.serializers import UserSerializer
+from rest_framework import serializers
+from rest_framework.serializers import SerializerMethodField
 
-from recipes.serializers import MinifiedRecipeSerializer
+from recipes.models import Recipe
 
 from .models import Subscription, User
+
+
+class MinifiedRecipeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = ['id', 'name', 'image', 'cooking_time']
 
 
 class CustomUserSerializer(UserSerializer):
@@ -49,3 +57,4 @@ class SubscriptionUserSerializer(UserSerializer):
     def get_recipes_count(self, user) -> int:
         queryset = User.objects.annotate(recipe_count=Count('recipes'))
         return queryset.get(id=user.id).recipe_count
+
