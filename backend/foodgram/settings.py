@@ -74,23 +74,23 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
-    }
-}
-
 #DATABASES = {
 #    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': os.environ.get('DB_NAME'),
+#        'USER': os.environ.get('POSTGRES_USER'),
+#        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+#        'HOST': os.environ.get('DB_HOST'),
+#        'PORT': os.environ.get('DB_PORT'),
 #    }
 #}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+}
 
 
 # Password validation
@@ -151,7 +151,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication'],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated'],
+        'rest_framework.permissions.AllowAny'],
 }
 
 AUTH_USER_MODEL = 'users.User'
@@ -161,8 +161,11 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
 DJOSER = {
-    'LOGIN_FIELD': 'email',
+    #'LOGIN_FIELD': 'email',
     'SERIALIZERS': {'user': 'users.serializers.CustomUserSerializer',
                     'current_user': 'users.serializers.CustomUserSerializer', },
-    'PERMISSIONS': {'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly']},
+    'PERMISSIONS':{'user_create': ['rest_framework.permissions.AllowAny'],
+                   'token_create': ['rest_framework.permissions.AllowAny'],
+                   'user_list': ['rest_framework.permissions.AllowAny'], },
+    'HIDE_USERS': False,
 }

@@ -14,6 +14,9 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
+    username = models.CharField(unique=True, max_length=50)
+    REQUIRED_FIELDS = ['username']
+    USERNAME_FIELD = 'email'
 
     @property
     def is_admin(self):

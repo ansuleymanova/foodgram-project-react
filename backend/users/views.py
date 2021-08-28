@@ -11,7 +11,6 @@ from .serializers import CustomUserSerializer, SubscriptionUserSerializer
 
 
 class UserViewSet(UserViewSet):
-    permission_classes = [IsAuthorAdminOrReadOnly]
     serializer_class = CustomUserSerializer
     pagination_class = PageNumberLimitPagination
 
