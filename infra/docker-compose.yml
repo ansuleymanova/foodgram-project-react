@@ -11,7 +11,7 @@ services:
 
   web:
     build:
-      context: ../backend
+      context: ../foodgram-project-react/backend
       dockerfile: Dockerfile
     restart: always
     volumes:
