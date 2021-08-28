@@ -47,7 +47,9 @@ class IngredientRecipe(models.Model):
                                    on_delete=models.DO_NOTHING)
     recipe = models.ForeignKey(Recipe,
                                on_delete=models.DO_NOTHING)
-    amount = models.PositiveIntegerField(validators=[MinValueValidator(0), ])
+    amount = models.PositiveIntegerField(validators=[MinValueValidator(0), ],
+                                         null=True,
+                                         blank=True)
 
 
 class Favorite(models.Model):
