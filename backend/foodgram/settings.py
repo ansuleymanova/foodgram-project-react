@@ -166,9 +166,10 @@ DJOSER = {
     'USER_ID_FIELD': 'username',
     'SERIALIZERS': {'user': 'users.serializers.CustomUserSerializer',
                     'current_user': 'users.serializers.CustomUserSerializer',
-                    'user_create': 'djoser.serializers.UserCreateSerializer', },
+                    'user_create':
+                        'djoser.serializers.UserCreateSerializer', },
     'PERMISSIONS': {'user_create': ['rest_framework.permissions.AllowAny'],
-                   'token_create': ['rest_framework.permissions.AllowAny'],
-                   'user_list': ['rest_framework.permissions.AllowAny'],
-                   'user': ['rest_framework.permissions.AllowAny'], },
+                    'token_create': ['rest_framework.permissions.AllowAny'],
+                    'user_list': ['rest_framework.permissions.AllowAny'],
+                    'user': ['rest_framework.permissions.AllowAny'], },
 }
