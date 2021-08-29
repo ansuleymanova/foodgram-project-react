@@ -1,4 +1,4 @@
-# Fixed!
+# Fixed shopping cart, subscriptions page and ingredient duplication
 
 ![Foodgram workflow](https://github.com/ansuleymanova/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 
