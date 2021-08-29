@@ -163,7 +163,7 @@ CORS_URLS_REGEX = r'^/api/.*$'
 
 DJOSER = {
     'HIDE_USERS': False,
-    'USER_ID_FIELD': 'username',
+    'USER_ID_FIELD': 'id',
     'SERIALIZERS': {'user': 'users.serializers.CustomUserSerializer',
                     'current_user': 'users.serializers.CustomUserSerializer',
                     'user_create':
