@@ -37,21 +37,21 @@ def subscribe(request, user_id):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-#@api_view(['GET'])
-#@permission_classes([permissions.IsAuthenticated])
-#def subscriptions(request):
+# @api_view(['GET'])
+# @permission_classes([permissions.IsAuthenticated])
+# def subscriptions(request):
 #    queryset = User.objects.filter(subscription__subscriber_id=request.user.id)
 #    paginator = PageNumberLimitPagination()
- #   result_page = paginator.paginate_queryset(queryset, request)
- #   serializer = SubscriptionUserSerializer(result_page,
- #                                           many=True)
- #   return Response(serializer.data)
+#    result_page = paginator.paginate_queryset(queryset, request)
+#    serializer = SubscriptionUserSerializer(result_page,
+#                                           many=True)
+#    return Response(serializer.data)
 
 class SubscriptionList(generics.ListAPIView):
     serializer_class = SubscriptionUserSerializer
     pagination_class = PageNumberLimitPagination
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = SubscriptionUserSerializer(queryset,
