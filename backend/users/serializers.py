@@ -34,7 +34,7 @@ class CustomUserSerializer(UserSerializer):
             subscriber__id=subscriber.id).exists()
 
 
-class SubscriptionUserSerializer(UserSerializer):
+class SubscriptionUserSerializer(CustomUserSerializer):
     recipes = SerializerMethodField()
     recipes_count = SerializerMethodField()
 
@@ -45,7 +45,6 @@ class SubscriptionUserSerializer(UserSerializer):
                   'recipes', 'recipes_count')
         extra_kwargs = {'email': {'required': False},
                         'first_name': {'max_length': 150},
-                        'password': {'max_length': 150}
                         }
 
     def get_recipes(self, user, limit=None):

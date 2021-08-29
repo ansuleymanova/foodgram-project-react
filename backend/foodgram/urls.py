@@ -2,10 +2,12 @@
 from django.contrib import admin
 from django.urls import include, path
 
+from users.views import subscriptions
 # from drf_yasg import openapi
 # from drf_yasg.views import get_schema_view
 # from rest_framework import permissions
 urlpatterns = [
+    path('api/users/subscriptions/', subscriptions, name='subscriptions'),
     path('api/auth/', include('djoser.urls.authtoken')),
     path('api/', include('djoser.urls')),
     path('admin/', admin.site.urls),
