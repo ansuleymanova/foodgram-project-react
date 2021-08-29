@@ -34,14 +34,15 @@ class CustomUserSerializer(UserSerializer):
             subscriber__id=subscriber.id).exists()
 
 
-class SubscriptionUserSerializer(CustomUserSerializer):
+class SubscriptionUserSerializer(UserSerializer):
     recipes = SerializerMethodField()
     recipes_count = SerializerMethodField()
+    is_subscribed = SerializerMethodField()
 
     class Meta:
         model = User
         fields = ('email', 'id', 'username', 'first_name',
-                  'last_name',
+                  'last_name', 'is_subscribed',
                   'recipes', 'recipes_count')
         extra_kwargs = {'email': {'required': False},
                         'first_name': {'max_length': 150},
@@ -56,3 +57,9 @@ class SubscriptionUserSerializer(CustomUserSerializer):
     def get_recipes_count(self, user) -> int:
         queryset = User.objects.annotate(recipe_count=Count('recipes'))
         return queryset.get(id=user.id).recipe_count
+
+    def get_is_subscribed(self, author) -> bool:
+        subscriber = self.context['request'].user
+        return Subscription.objects.filter(
+            author__id=author.id,
+            subscriber__id=subscriber.id).exists()

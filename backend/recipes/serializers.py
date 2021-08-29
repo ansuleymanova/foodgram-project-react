@@ -103,13 +103,12 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags')
         instance = super().update(instance, validated_data)
         instance.tags.set(tags)
+        IngredientRecipe.objects.filter(recipe_id=instance.id).delete()
         ingredients_req = context.data['ingredients']
         ingredient_list = []
         for ingredient in ingredients_req:
             ingredient_list.append(IngredientRecipe(
                 recipe=instance,
-                # здесь все равно приходится отправлять запрос в цикле,
-                # не понимаю, можно ли сделать иначе
                 ingredient=Ingredient.objects.get(id=ingredient['id']),
                 amount=ingredient['amount']))
         IngredientRecipe.objects.bulk_create(ingredient_list)

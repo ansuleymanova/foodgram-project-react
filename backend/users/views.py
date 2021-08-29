@@ -1,6 +1,6 @@
 from djoser.views import UserViewSet
 from django.shortcuts import get_object_or_404
-from rest_framework import permissions, serializers, status
+from rest_framework import permissions, serializers, status, generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
@@ -37,9 +37,30 @@ def subscribe(request, user_id):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-@api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
-def subscriptions(request):
-    queryset = User.objects.filter(subscription__subscriber_id=request.user.id)
-    serializer = SubscriptionUserSerializer(queryset, many=True)
-    return Response(serializer.data)
+#@api_view(['GET'])
+#@permission_classes([permissions.IsAuthenticated])
+#def subscriptions(request):
+#    queryset = User.objects.filter(subscription__subscriber_id=request.user.id)
+#    paginator = PageNumberLimitPagination()
+ #   result_page = paginator.paginate_queryset(queryset, request)
+ #   serializer = SubscriptionUserSerializer(result_page,
+ #                                           many=True)
+ #   return Response(serializer.data)
+
+class SubscriptionList(generics.ListAPIView):
+    serializer_class = SubscriptionUserSerializer
+    pagination_class = PageNumberLimitPagination
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = SubscriptionUserSerializer(queryset,
+                                                many=True,
+                                                context={'request': request})
+        page = self.paginate_queryset(serializer.data)
+        return self.get_paginated_response(page)
+
+    def get_queryset(self):
+        queryset = User.objects.filter(
+            subscription__subscriber_id=self.request.user.id)
+        return queryset
