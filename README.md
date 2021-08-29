@@ -2,8 +2,9 @@
 
 Powered by Django & React
 
-Project is hosted here: http://130.193.53.29
-Admin zone is open for evaluation: http://130.193.53.29/admin
+Project is hosted here: http://84.252.139.70
+
+Admin zone is open for evaluation: http://84.252.139.70/admin
 
 ### Superuser credentials
 
