@@ -24,7 +24,8 @@ def subscribe(request, user_id):
         if author != request.user:
             Subscription.objects.create(author=author,
                                         subscriber=request.user)
-            serializer = SubscriptionUserSerializer(author)
+            serializer = SubscriptionUserSerializer(author,
+                                                    context={'request': request})
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
         raise serializers.ValidationError(
