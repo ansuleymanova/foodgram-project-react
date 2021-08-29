@@ -1,3 +1,5 @@
+![Foodgram workflow](https://github.com/ansuleymanova/foodgram-project-reart/actions/workflows/yamdb_workflow.yaml/badge.svg)
+
 ## Foodgram
 
 Powered by Django & React
