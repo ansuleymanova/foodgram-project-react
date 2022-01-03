@@ -38,6 +38,3 @@ docker-compose exec web python manage.py loaddata ingredients.json
 ```
 
 The server is up, go ahead and try http://127.0.0.1/admin
-
-
-Project is hosted here: http://84.252.136.55
