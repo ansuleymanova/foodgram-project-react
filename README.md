@@ -6,6 +6,8 @@ App for posting, editing & favoriting recipes with a "shopping cart" function th
 
 Powered by Django & React.
 
+Temporarily hosted here: http://130.193.55.155
+
 ## How To
 
 The repo contains files necessary to build three Docker containers on your machine: postgres, nginx and the backend app. The container for frontend will start and then terminate after front is built.
