@@ -17,7 +17,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['84.252.136.55', 'localhost', 'web:8000']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -157,7 +157,7 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'users.User'
 
-CORS_ALLOWED_ORIGINS = ["http://84.252.136.55", ]
+CORS_ALLOWED_ORIGINS = ["*"]
 # CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
