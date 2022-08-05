@@ -17,12 +17,12 @@ Clone the repo and from ```infra``` folder run following commands:
 ### Startup
 
 ```
-docker-compose up --build -d
-docker-compose exec web python manage.py makemigrations users
-docker-compose exec web python manage.py makemigrations titles
-docker-compose exec web python manage.py makemigrations reviews
-docker-compose exec web python manage.py migrate
-docker-compose exec web python manage.py collectstatic --no-input
+docker compose up --build -d
+docker compose exec web python manage.py makemigrations users
+docker compose exec web python manage.py makemigrations titles
+docker compose exec web python manage.py makemigrations reviews
+docker compose exec web python manage.py migrate
+docker compose exec web python manage.py collectstatic --no-input
 ```
 
 ### Superuser
