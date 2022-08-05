@@ -6,7 +6,7 @@ App for posting, editing & favoriting recipes with a "shopping cart" function th
 
 Powered by Django & React.
 
-Temporarily hosted here: http://130.193.55.155
+Temporarily hosted [here](http://51.250.111.212)
 
 ## How To
 
